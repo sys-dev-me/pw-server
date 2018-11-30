@@ -12,7 +12,7 @@ Quick password generator server
 <b>from client side</b>
 
 connect to port 9090 ( nc localhost 9090 )
-type 12 (size of password)
-result will be on screen and waiting again size of password, hit enter and if nothing entered connection will closed
+type for example 12 (password size)
+result will be in terminal and waiting next password size, hit enter and if nothing entered connection will closed
 
 
