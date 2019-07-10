@@ -6,7 +6,6 @@ import "fmt"
 import "os"
 import "net"
 import "bufio"
-import "math/rand"
 import "strconv"
 import "strings"
 
@@ -16,6 +15,8 @@ const (
 
 
 var pChar ="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321{}()$-=!@#_/\\_&"
+
+/*
 
 func generatePassword ( pwSize int ) (string) {
 	src := []rune(pChar)
@@ -28,10 +29,15 @@ func generatePassword ( pwSize int ) (string) {
 	return string( res )
 }
 
-func handleConnection ( conn net.Conn ) {
+*/
+
+
+
+func handleConnection ( conn net.Conn, app *Application ) {
 
 	defer conn.Close()
 	rw := bufio.NewReadWriter(bufio.NewReader(conn), bufio.NewWriter(conn))
+
 
 	for {
         req, err := rw.ReadString('\n')
@@ -48,7 +54,9 @@ func handleConnection ( conn net.Conn ) {
 			return 
 		}
 
-        rw.WriteString( fmt.Sprintf( generatePassword( pwLen ) ) + "\n" )
+	pw := app.Generate ( pwLen )
+
+        rw.WriteString( fmt.Sprintf( "%v\n", pw )  )
         rw.Flush()
     }
 
@@ -56,10 +64,14 @@ func handleConnection ( conn net.Conn ) {
 
 func main () {
 
+
+	app := new(Application)
+	app.SetVoc( pChar )
 	if len( os.Args ) < 2 {
 		log.Println( "Not enough arguments. Usage example: pw-server [port]" ) 
 		os.Exit( 1 )
 	}
+
 	
 	port := os.Args[1]
 	conn, err := net.Listen(CONN_TYPE, "localhost:"+port)
@@ -76,7 +88,7 @@ func main () {
 		 	log.Println( "Something went wrong, can't accept connection" )
 		 }
 
-		go handleConnection(res)
+		go handleConnection(res, app)
 		defer conn.Close()
 	}
 }
